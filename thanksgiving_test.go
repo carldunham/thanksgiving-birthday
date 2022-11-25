@@ -1,7 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -94,5 +96,22 @@ func TestFallsOnThanksgivingAfter(t *testing.T) {
 			require.ErrorIs(t, err, c.Err)
 			assert.Equal(t, c.Expected, actual)
 		})
+	}
+}
+
+func TestAgainstBruteForceApproach(t *testing.T) {
+	for day := 22; day <= 28; day++ {
+		for year := 1900; year <= 2200; year++ {
+			t.Run(fmt.Sprintf("year=%d day=%d", year, day), func(t *testing.T) {
+				expected := year
+				for time.Date(expected, 11, day, 0, 0, 0, 0, time.Local).Weekday() != time.Thursday {
+					expected++
+				}
+				actual, err := fallsOnThanksgivingAfter(year, day)
+
+				require.NoError(t, err)
+				assert.Equal(t, expected, actual)
+			})
+		}
 	}
 }

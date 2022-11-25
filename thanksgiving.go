@@ -23,11 +23,42 @@ func fallsOnThanksgivingAfter(year int, day int) (int, error) {
 	case year < 0:
 		return 0, fmt.Errorf("%d is an %w", year, ErrInvalidYear)
 	default:
-		for y := year; true; y++ {
-			if time.Date(y, 11, day, 0, 0, 0, 0, time.Local).Weekday() == time.Thursday {
-				return y, nil
-			}
+		delta := int(time.Thursday - time.Date(year, 11, day, 0, 0, 0, 0, time.Local).Weekday())
+		switch {
+		case delta == 0:
+			return year, nil
+		case delta < 0:
+			delta += 7
 		}
-		return 0, ErrNoIdea
+		target := year + delta
+		next := target - leapYearsBetween(year, target)
+		next += leapYearsBetween(next, target)
+
+		if isLeapYear(next) {
+			return fallsOnThanksgivingAfter(next, day)
+		}
+		return next, nil
+	}
+}
+
+func leapYearsBetween(from, to int) int {
+	var ret int
+
+	for y := from + 1; y < to; y++ {
+		if isLeapYear(y) {
+			ret++
+		}
+	}
+	return ret
+}
+
+func isLeapYear(year int) bool {
+	switch {
+	case year%400 == 0:
+		return true
+	case year%100 == 0:
+		return false
+	default:
+		return year%4 == 0
 	}
 }

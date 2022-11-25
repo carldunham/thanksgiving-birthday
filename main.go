@@ -9,8 +9,8 @@ import (
 
 func main() {
 	var (
-		year *uint16 = pflag.Uint16("year", uint16(time.Now().Year()), "year (on or after) to check from")
-		day  *uint8  = pflag.Uint8("day", 24, "day in November to check (must be 22-28)")
+		year *int = pflag.Int("year", time.Now().Year(), "year (on or after) to check from")
+		day  *int = pflag.Int("day", 24, "day in November to check (must be 22-28)")
 	)
 
 	pflag.Parse()
